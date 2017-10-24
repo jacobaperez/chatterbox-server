@@ -11,9 +11,9 @@ exports.requestHandler = function(request, response) {
 
   headers['Content-Type'] = 'application/json';
 
-  request.on('error', (err) => {
-    console.error(err);
-  });
+  // request.on('error', (err) => {
+  //   console.error(err);
+  // });
 
 
   if (request.url !== '/classes/messages') {  
@@ -27,20 +27,17 @@ exports.requestHandler = function(request, response) {
       response.end(JSON.stringify(storage));
 
     } else if (request.method === 'POST') {
-      let body = [];
+      let body = '';
 
       request.on('data', (chunk) => {
-        body.push(chunk);       
-      }).on('end', () => {
-        body = Buffer.concat(body).toString();
+        body+= chunk; 
+      });
+      request.on('end', () => {
         storage.results.push(JSON.parse(body));
-        response.writeHead(201, headers);
+        response.writeHead(201, headers)  
         response.end(body);
       });
 
-      response.on('error', (err) => {
-        console.error(err);
-      });
 
     } else if (request.method === 'OPTIONS') {
       response.writeHead(200, headers);
